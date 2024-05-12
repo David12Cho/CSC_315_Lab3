@@ -66,65 +66,68 @@ public class MipsUnit {
     public void showHelp() {
         System.out.print(
                 """
-                        h = show help
-                        d = dump register state
-                        s = single step through the program (i.e. execute 1 instruction and stop)
-                        s num = step through num instructions of the program
-                        r = run until the program ends
-                        m num1 num2 = display data memory from location num1 to num2
-                        c = clear all registers, memory, and the program counter to 0
-                        q = exit the program
-                        \n
-                        """
+
+                h = show help
+                d = dump register state
+                s = single step through the program (i.e. execute 1 instruction and stop)
+                s num = step through num instructions of the program
+                r = run until the program ends
+                m num1 num2 = display data memory from location num1 to num2
+                c = clear all registers, memory, and the program counter to 0
+                q = exit the program
+                
+                """
         );
     }
 
     // Set all registers to 0
     public void dumpRegisters() {
+        System.out.print("\n");
         System.out.printf("pc = %d\n", programCounter);
 
-        System.out.printf("$0 = %d\t$v0 = %d\t$v1 = %d\t$a0 = %d\t\n",
+        System.out.printf("$0 = %d          $v0 = %d         $v1 = %d         $a0 = %d\n",
                 registers.get("$0"),
                 registers.get("$v0"),
                 registers.get("$v1"),
                 registers.get("$a0")
         );
 
-        System.out.printf("$a1 = %d\t$a2 = %d\t$a3 = %d\t$t0 = %d\t\n",
+        System.out.printf("$a1 = %d         $a2 = %d         $a3 = %d         $t0 = %d\n",
                 registers.get("$a1"),
                 registers.get("$a2"),
                 registers.get("$a3"),
                 registers.get("$t0")
         );
-        System.out.printf("$t1 = %d\t$t2 = %d\t$t3 = %d\t$t4 = %d\t\n",
+        System.out.printf("$t1 = %d         $t2 = %d         $t3 = %d         $t4 = %d\n",
                 registers.get("$t1"),
                 registers.get("$t2"),
                 registers.get("$t3"),
                 registers.get("$t4")
         );
-        System.out.printf("$t5 = %d\t$t6 = %d\t$t7 = %d\t$s0 = %d\t\n",
+        System.out.printf("$t5 = %d         $t6 = %d         $t7 = %d         $s0 = %d\n",
                 registers.get("$t5"),
                 registers.get("$t6"),
                 registers.get("$t7"),
                 registers.get("$s0")
         );
-        System.out.printf("$s1 = %d\t$s2 = %d\t$s3 = %d\t$s4 = %d\t\n",
+        System.out.printf("$s1 = %d         $s2 = %d         $s3 = %d         $s4 = %d\n",
                 registers.get("$s1"),
                 registers.get("$s2"),
                 registers.get("$s3"),
                 registers.get("$s4")
         );
-        System.out.printf("$s5 = %d\t$s6 = %d\t$s7 = %d\t$t8 = %d\t\n",
+        System.out.printf("$s5 = %d         $s6 = %d         $s7 = %d         $t8 = %d\n",
                 registers.get("$s5"),
                 registers.get("$s6"),
                 registers.get("$s7"),
                 registers.get("$t8")
         );
-        System.out.printf("$t9 = %d\t$sp = %d\t$ra = %d\n",
+        System.out.printf("$t9 = %d         $sp = %d         $ra = %d\n",
                 registers.get("$t9"),
                 registers.get("$sp"),
                 registers.get("$ra")
         );
+        System.out.print("\n");
     }
 
     // HELPER FUNCTION: called by stepThrough(int numSteps),
@@ -140,7 +143,7 @@ public class MipsUnit {
         //     System.out.println("\t" + str);
         // }   
 
-        System.out.println("Instruction: " + instructions.get(programCounter));
+        // System.out.println("Instruction: " + instructions.get(programCounter));
 
         switch (command.length) {
             case 4:
@@ -244,7 +247,7 @@ public class MipsUnit {
             executeLine();
         }
 
-        System.out.printf("%d instruction(s) executed\n", numSteps);
+        System.out.printf("        %d instruction(s) executed\n", numSteps);
     }
 
     // Run until program ends
@@ -256,10 +259,11 @@ public class MipsUnit {
 
     // Display data memory between two locations (inclusive)
     public  void printMemory(int num1, int num2){
+        System.out.print("\n");
         for(int i = num1; i <= num2; i++){
             System.out.printf("[%d] = %d\n", i, dataMemory[i]);
         }
-        
+        System.out.print("\n");
     }
 
     // Clears registers, data memory, and sets pc back to 0
@@ -274,7 +278,7 @@ public class MipsUnit {
         // Pc back to 0
         programCounter = 0;
 
-        System.out.print("\tsimulator reset\n");
+        System.out.print("        Simulator reset\n\n");
     }
 
     // No quit
@@ -358,22 +362,30 @@ public class MipsUnit {
     }
 
     public void sw(String arg1, String arg2) {
+        // System.out.println("Args: " + arg1 + " " + arg2);
+        // System.out.printf("register %s: %d\nregister %s: %d\n\n", 
+        //             arg1, registers.get(arg1), arg2, registers.get(arg2));
+
         int address = offSet(arg2);
 
         dataMemory[address] = registers.get(arg1);
+        // System.out.println(address);
     }
 
     // Helper function to offset for data memory
     public int offSet(String arg1) {
-        int[] result = new int[2];
-        String[] parts = arg1.split("\\$");
+        
 
-        for (int i = 0; i < 2; i++) {
-            String number = parts[i].replaceAll("[^0-9]", "");
-            result[i] = Integer.parseInt(number);
-        }
+        int signAt = arg1.indexOf('$');
 
-        return result[0] + result[1];
+        String result = arg1.substring(0, signAt - 1).replaceAll("[^0-9]", "");
+        int num1 = Integer.parseInt(result);
+
+        String register = arg1.substring(signAt, signAt + 3);
+        int num2 = registers.get(register);
+
+        return num1 + num2;
+
     }
 
     /* ALL COMMANDS WITH ONE ARGUMENT */
@@ -382,11 +394,11 @@ public class MipsUnit {
     }
 
     public void jr(String arg1) {
-        programCounter = registers.get(arg1);
+        programCounter = registers.get(arg1) - 1;
     }
 
     public void jal(String arg1) {
-        registers.put("$ra", programCounter);
+        registers.put("$ra", programCounter + 1);
         j(arg1);
 
     }

@@ -50,10 +50,12 @@ public class Main {
             }
             if (nextline.contains(":")) {
                 String label = nextline.substring(0, nextline.indexOf(":")).trim();
-                labels.put(label, address);
                 nextline = nextline.substring(nextline.indexOf(":") + 1).trim();
                 if (nextline.isEmpty()){
+                    labels.put(label, address);
                     continue;
+                } else {
+                    labels.put(label, address - 1);
                 }
             }
             instructions.add(nextline);
@@ -73,6 +75,8 @@ public class Main {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
             while ((line = reader.readLine()) != null) {
+                System.out.print("mips> ");
+                System.out.print(line.trim() + "\n");
                 executeCommand(line.trim());
             }
         } catch (IOException e) {
@@ -83,7 +87,7 @@ public class Main {
     // Interactive mode
     public static void interactiveMode() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("MIPS Emulator started. Type 'h' for help.");
+        // System.out.println("MIPS Emulator started. Type 'h' for help.");
         boolean keepGoing = true;
         while (keepGoing) {
             System.out.print("mips> ");
