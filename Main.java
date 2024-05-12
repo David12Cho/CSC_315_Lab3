@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -11,14 +12,12 @@ public class Main {
 
 
     // Main method to handle command line input
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException{
 
         // Load instructions and labels from file if provided
         if (args.length > 0) {
             loadAssemblyFile(args[0]);
         }
-
-        MipsUnit emulator = new MipsUnit();
 
         // Run in interactive mode or script mode
         if (args.length > 1) {
@@ -29,29 +28,44 @@ public class Main {
     }
 
     // Load assembly file
-    public static void loadAssemblyFile(String filename) {
+    public static void loadAssemblyFile(String filename) throws IOException{ 
         Map<String, Integer> labels = new HashMap<>();
         List<String> instructions = new ArrayList<>();
 
+        Scanner scanner = new Scanner(new File(filename));
+        int address = 0;
 
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-                if (!line.isEmpty() && !line.startsWith("#")) {
-                    if (line.endsWith(":")) {
-                        labels.put(line.substring(0, line.length() - 1), instructions.size());
-                    } else {
-                        instructions.add(line);
-                    }
+        while (scanner.hasNextLine()) {
+            String nextline = scanner.nextLine().trim();
+            // Skip empty lines and comments
+            if (nextline.isEmpty()){
+                continue;
+            }
+            if(nextline.charAt(0) == '#'){
+                continue;
+            }
+            // Remove inline comments and process labels
+            if (nextline.contains("#")) {
+                nextline = nextline.substring(0, nextline.indexOf("#")).trim();
+            }
+            if (nextline.contains(":")) {
+                String label = nextline.substring(0, nextline.indexOf(":")).trim();
+                labels.put(label, address);
+                nextline = nextline.substring(nextline.indexOf(":") + 1).trim();
+                if (nextline.isEmpty()){
+                    continue;
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            instructions.add(nextline);
+            address+=1;
         }
+        scanner.close();
+
+        // System.out.println(instructions);
 
         emulator = new MipsUnit(labels, instructions);
+
+        // emulator.printStuff();
     }
 
     // Run script file

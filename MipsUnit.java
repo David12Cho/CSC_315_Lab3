@@ -54,6 +54,14 @@ public class MipsUnit {
         this(new HashMap<String, Integer>(), new ArrayList<String>());
     }
 
+    public void printStuff(){
+        System.out.print("Labels: ");
+        System.out.println(labels);
+
+        System.out.print("Instructions: ");
+        System.out.println(instructions);
+    }
+
     // Prints out valid commands
     public void showHelp() {
         System.out.print(
@@ -122,9 +130,15 @@ public class MipsUnit {
     // HELPER FUNCTION: called by stepThrough(int numSteps),
     // but is the one that actually executes an instruction
     public void executeLine() {
-        String[] command = instructions.get(programCounter).trim().split("//s+");
+        String[] command = instructions.get(programCounter).trim().split("\\s+");
 
         // and, or, add, addi, sll, sub, slt, beq, bne, lw, sw, j, jr, and jal
+
+        System.out.println("Instruction: " + instructions.get(programCounter));
+        for (String str : command){
+            
+            System.out.println("\t" + str);
+        }   
 
         switch (command.length) {
             case 4:
@@ -265,64 +279,64 @@ public class MipsUnit {
 
     /* ALL COMMANDS NEEDING THREE PARAMETERS */
     public void and(String arg1, String arg2, String arg3) {
-        registers.put("arg1",
-                registers.get("arg2") & registers.get("arg3")
+        registers.put(arg1,
+                registers.get(arg2) & registers.get(arg3)
         );
     }
 
     public void or(String arg1, String arg2, String arg3) {
-        registers.put("arg1",
-                registers.get("arg2") | registers.get("arg3")
+        registers.put(arg1,
+                registers.get(arg2) | registers.get(arg3)
         );
     }
 
     public void add(String arg1, String arg2, String arg3) {
-        registers.put("arg1",
-                registers.get("arg2") + registers.get("arg3")
+        registers.put(arg1,
+                registers.get(arg2) + registers.get(arg3)
         );
     }
 
     public void addi(String arg1, String arg2, String arg3) {
-        registers.put("arg1",
-                registers.get("arg2") + Integer.parseInt("arg3")
+        registers.put(arg1,
+                registers.get(arg2) + Integer.parseInt(arg3)
         );
 
     }
 
     public void sll(String arg1, String arg2, String arg3) {
-        registers.put("arg1",
-                registers.get("arg2") << Integer.parseInt("arg3")
+        registers.put(arg1,
+                registers.get(arg2) << Integer.parseInt(arg3)
         );
     }
 
     public void sub(String arg1, String arg2, String arg3) {
-        registers.put("arg1",
-                registers.get("arg2") - registers.get("arg3")
+        registers.put(arg1,
+                registers.get(arg2) - registers.get(arg3)
         );
     }
 
     public void slt(String arg1, String arg2, String arg3) {
         int zeroFlag = 0;
 
-        if (registers.get("arg2") < registers.get("arg3")) {
+        if (registers.get(arg2) < registers.get(arg3)) {
             zeroFlag = 1;
         }
 
-        registers.put("arg1",
+        registers.put(arg1,
                 zeroFlag
         );
 
     }
 
     public void beq(String arg1, String arg2, String arg3) {
-        if (registers.get("arg1") == registers.get("arg2")) {
-            programCounter = labels.get("arg3");
+        if (registers.get(arg1) == registers.get(arg2)) {
+            programCounter = labels.get(arg3);
         }
     }
 
     public void bne(String arg1, String arg2, String arg3) {
-        if (registers.get("arg1") != registers.get("arg2")) {
-            programCounter = labels.get("arg3");
+        if (registers.get(arg1) != registers.get(arg2)) {
+            programCounter = labels.get(arg3);
         }
     }
 
