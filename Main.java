@@ -1,30 +1,40 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
 
+    public static MipsUnit emulator;
+    // public static Map<String, Integer> labels = new HashMap<>();
+
+
+
     // Main method to handle command line input
     public static void main(String[] args) {
-        MipsUnit emulator = new MipsUnit();
 
         // Load instructions and labels from file if provided
         if (args.length > 0) {
-            emulator.loadAssemblyFile(args[0]);
+            loadAssemblyFile(args[0]);
         }
+
+        MipsUnit emulator = new MipsUnit();
 
         // Run in interactive mode or script mode
         if (args.length > 1) {
-            emulator.runScriptFile(args[1]);
+            runScriptFile(args[1]);
         } else {
-            emulator.interactiveMode();
+            interactiveMode();
         }
     }
 
     // Load assembly file
-    public void loadAssemblyFile(String filename) {
+    public static void loadAssemblyFile(String filename) {
+        Map<String, Integer> labels = new HashMap<>();
+        List<String> instructions = new ArrayList<>();
+
+
+
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -40,10 +50,12 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        emulator = new MipsUnit(labels, instructions);
     }
 
     // Run script file
-    public void runScriptFile(String filename) {
+    public static void runScriptFile(String filename) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -55,88 +67,53 @@ public class Main {
     }
 
     // Interactive mode
-    public void interactiveMode() {
+    public static void interactiveMode() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("MIPS Emulator started. Type 'h' for help.");
-        while (true) {
+        boolean keepGoing = true;
+        while (keepGoing) {
             System.out.print("mips> ");
             String command = scanner.nextLine().trim();
-            executeCommand(command);
+            keepGoing = executeCommand(command);
         }
+
+        scanner.close();
     }
 
     // Execute command
-    public void executeCommand(String command) {
+    public static boolean executeCommand(String command) {
         if (command.equals("h")) {
-            showHelp();
+            emulator.showHelp();
         } else if (command.equals("d")) {
-            dumpRegisters();
+            emulator.dumpRegisters();
         } else if (command.equals("s")) {
-            stepThrough();
+            emulator.stepThrough();
         } else if (command.startsWith("s ")) {
             int num = Integer.parseInt(command.substring(2).trim());
-            stepThrough(num);
+            emulator.stepThrough(num);
         } else if (command.equals("r")) {
-            runTheRest();
+            emulator.runTheRest();
         } else if (command.startsWith("m ")) {
             String[] parts = command.substring(2).trim().split(" ");
             int num1 = Integer.parseInt(parts[0]);
             int num2 = Integer.parseInt(parts[1]);
-            printMemory(num1, num2);
+            emulator.printMemory(num1, num2);
         } else if (command.equals("c")) {
-            clear();
+            emulator.clear();
         } else if (command.equals("q")) {
-            quitProgram();
+            return false;
         } else {
             System.out.println("Invalid command. Type 'h' for help.");
         }
+
+        return true;
     }
 
     // Quit program
-    public void quitProgram() {
-        System.out.println("Exiting MIPS Emulator.");
-        System.exit(0);
-    }
+    // public void quitProgram() {
+    //     System.out.println("Exiting MIPS Emulator.");
+    //     System.exit(0);
+    // }
 
-    // Clears registers, data memory, and sets pc back to 0
-    public void clear() {
-        for (String reg : registers.keySet()) {
-            registers.put(reg, 0);
-        }
-
-        // Clear memory
-        Arrays.fill(dataMemory, 0);
-
-        // Pc back to 0
-        programCounter = 0;
-
-        System.out.print("\tsimulator reset\n");
-    }
-    // Step through one instruction in the program
-    public void stepThrough() {
-        stepThrough(1);
-    }
-
-    // Step through n instructions in the program
-    public void stepThrough(int numSteps) {
-        for (int i = 0; i < numSteps; i++) {
-            executeLine();
-        }
-        System.out.printf("%d instruction(s) executed\n", numSteps);
-    }
-
-    // Run until program ends
-    public void runTheRest() {
-        while (programCounter < instructions.size()) {
-            stepThrough();
-        }
-    }
-
-    // Display data memory between two locations (inclusive)
-    public void printMemory(int num1, int num2) {
-        for (int i = num1; i <= num2; i++) {
-            System.out.printf("[%d] = %d\n", i, dataMemory[i]);
-        }
-    }
 
 }

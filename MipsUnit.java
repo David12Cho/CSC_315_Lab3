@@ -1,4 +1,3 @@
-import java.io.*;
 import java.util.*;
 
 public class MipsUnit {
@@ -9,7 +8,7 @@ public class MipsUnit {
     private Map<String, Integer> registers;
     private int[] dataMemory;
 
-    public MipsUnit(HashMap<String, Integer> labels, ArrayList<String> instructions) {
+    public MipsUnit(Map<String, Integer> labels, List<String> instructions) {
         // Initialize programCounter and dataMemory
         programCounter = 0;
         dataMemory = new int[8192];
@@ -212,7 +211,7 @@ public class MipsUnit {
     }
 
 
-    
+
 
     // Step through one instruction in the program
     public  void stepThrough(){
@@ -236,7 +235,7 @@ public class MipsUnit {
     }
 
     // Display data memory between two locations (inclusive)
-    public  void printMemory(int[] dataMemory, int num1, int num2){
+    public  void printMemory(int num1, int num2){
         for(int i = num1; i <= num2; i++){
             System.out.printf("[%d] = %d\n", i, dataMemory[i]);
         }
