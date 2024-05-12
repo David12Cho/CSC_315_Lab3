@@ -134,11 +134,13 @@ public class MipsUnit {
 
         // and, or, add, addi, sll, sub, slt, beq, bne, lw, sw, j, jr, and jal
 
-        System.out.println("Instruction: " + instructions.get(programCounter));
-        for (String str : command){
+        // System.out.println("Instruction: " + instructions.get(programCounter));
+        // for (String str : command){
             
-            System.out.println("\t" + str);
-        }   
+        //     System.out.println("\t" + str);
+        // }   
+
+        System.out.println("Instruction: " + instructions.get(programCounter));
 
         switch (command.length) {
             case 4:
@@ -183,9 +185,10 @@ public class MipsUnit {
                         break;
 
                     default:
-                        System.out.print("error\n");
+                        System.out.print("Caught in case 4\n");
 
                 }
+                break;
 
             case 3:
                 command[1] = command[1].substring(0, command[1].length() - 1);
@@ -198,8 +201,9 @@ public class MipsUnit {
                         sw(command[1], command[2]);
                         break;
                     default:
-                        System.out.print("error\n");
+                        System.out.print("Caught in case 3\n");
                 }
+                break;
 
             case 2:
                 switch (command[0]) {
@@ -213,13 +217,15 @@ public class MipsUnit {
                         jal(command[1]);
                         break;
                     default:
-                        System.out.print("error\n");
+                        System.out.print("Caught in case 2\n");
 
                 }
+                break;
 
             default:
-                System.out.print("error\n");
+                System.out.print("Invalid num strings\n");
         }
+
 
         programCounter++;
     }
@@ -244,7 +250,7 @@ public class MipsUnit {
     // Run until program ends
     public  void runTheRest(){
         while(programCounter < instructions.size()){
-            stepThrough();
+            executeLine();
         }
     }
 
@@ -294,6 +300,9 @@ public class MipsUnit {
         registers.put(arg1,
                 registers.get(arg2) + registers.get(arg3)
         );
+
+        // System.out.println("arg1 = " + arg1);
+        // System.out.println(registers.get(arg2) + registers.get(arg3));
     }
 
     public void addi(String arg1, String arg2, String arg3) {
