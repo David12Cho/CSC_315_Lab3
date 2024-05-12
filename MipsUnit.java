@@ -211,6 +211,55 @@ public class MipsUnit {
         programCounter++;
     }
 
+
+    
+
+    // Step through one instruction in the program
+    public  void stepThrough(){
+        stepThrough(1);
+    }
+
+    // Step through n instructions in the program
+    public  void stepThrough(int numSteps){
+        for (int i = 0; i < numSteps; i++){
+            executeLine();
+        }
+
+        System.out.printf("%d instruction(s) executed\n", numSteps);
+    }
+
+    // Run until program ends
+    public  void runTheRest(){
+        while(programCounter < instructions.size()){
+            stepThrough();
+        }
+    }
+
+    // Display data memory between two locations (inclusive)
+    public  void printMemory(int[] dataMemory, int num1, int num2){
+        for(int i = num1; i <= num2; i++){
+            System.out.printf("[%d] = %d\n", i, dataMemory[i]);
+        }
+        
+    }
+
+    // Clears registers, data memory, and sets pc back to 0
+    public void clear(){
+        for (String reg : registers.keySet()){
+            registers.put(reg, 0);
+        }
+
+        // Clear memory
+        dataMemory = new int[8192];
+
+        // Pc back to 0
+        programCounter = 0;
+
+        System.out.print("\tsimulator reset\n");
+    }
+
+    // No quit
+
     /***  ALL SUPPORTED INSTRUCTION COMMANDS  ***/
     // and, or, add, addi, sll, sub, slt, beq, bne, lw, sw, j, jr, and jal
 
